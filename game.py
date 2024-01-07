@@ -1,5 +1,6 @@
 import random
-
+import json
+from ollama import make_rooms
 
 # Some fun flavour text to start off
 character_descriptions = ["tall", "short", "sly", "lanky", "blue"]
@@ -22,68 +23,14 @@ synonyms = {"n":"north","s":"south","e":"east","w":"west","ne":"northeast","nw":
 
 # Define the rooms in the underground
 # a room has exits to other rooms and a description and items
-rooms = {}
-
-rooms["Welcome"] = { 
-    'exits' : { 'start': 'Entrance', 'exit': 'Welcome' } , 
-    'description' : """Welcome to the fabulous underground.
-You will be provided with danger, exploration, loot, and certain death.
-Explore directions by saying that direction.  Exit this room by typing
-the name of the exit listed below.
-
-Other commands you can use are 'inventory' and 'describe'.
-To pick up an item type the name of it."""}
-
-rooms["Entrance"] = { 
-    'exits' : { 'north': 'Dark Hallway' } , 
-    'description' : 'You are at the entrance of the dungeon'}
-
-rooms["Dark Hallway"] = { 
-    'exits' : { 'south':'Entrance', 'northwest': 'Abyss Top' } , 
-    'description' : 'This hallway is dark'}
-
-rooms["Abyss Top"] = { 
-    'exits' : { 'southeast':'Dark Hallway', 'down':'Deep Abyss' } , 
-    'description' : 'Your soul feels heavy and in this place you feel no hope'}
-
-rooms["Deep Abyss"] = {
-    'exits' : { 'up':'Abyss Top', 'east':'Eastern Narrow Tunnel', 'west':'Western Narrow Tunnel', 'portal':'Purple plains'},
-    'description' : """Your will feels broken and your heart beats pale limp thumps.
-This place is near an evil beyond anything you've experience before.
-Fleeing back up is possible.  Narrow tunnels span east and west.
-Surrounded in cobble stone and adorned with skulls stands a single glowing portal in this vast pit."""}
-
-rooms["Eastern Narrow Tunnel"] = {
-    'exits' : {"west":"Deep Abyss"},
-    'description' : "This is a dead End"}
-
-rooms["Western Narrow Tunnel"] = {
-    'exits' : {"east":"Deep Abyss"},
-    'description' : "This is a dead End"}
-
-rooms["Purple plains"] = {
-    'exits' : {"portal":"Deep Abyss"},
-    'description' : """An infinite expanse of purple flowers stretches out in all directions.
-Fluffy clouds dot the sky, shielding you from a summer sun.  A cool breeze lifts
-the fragrance from the fields and refreshes you.
-An arch made of volcanic glass vibrates with wicked energy, providing a portal to horrors."""}
+rooms = json.load(open("rooms.json"))
 
 # add a loot list to every room
 for room in rooms:
     rooms[room]['loot'] = rooms[room].get('loot',list())
 
 # loot to find that is scattered around the place
-loot = {}
-
-loot['knife'] = { 
-    'possible_spawn_room' : ['Entrance','Dark Hallway'], 
-    'description' : 'A trusty blade with a business end you would rather not be on the receiving side of' , 
-    'value' : 5 }
-
-loot['skull'] = { 
-    'possible_spawn_room' : ['Eastern Narrow Tunnel','Western Narrow Tunnel'], 
-    'description' : 'It was a human, possibly ugly' , 
-    'value' : -2 }
+loot = json.load(open("loot.json"))
 
 # assign loot to room
 for item in loot:
@@ -93,6 +40,24 @@ for item in loot:
 current_room = "Welcome"
 players_loot = []
 
+
+# Check if room has an undefined exit
+def check_empty_exits(current_room):
+    if "" in rooms[current_room]['exits'].values():
+        return True
+
+# Find rooms with undefined exits
+def find_empty_exits():
+    empty_exits = []
+    for room in rooms:
+        if check_empty_exits(room):
+            empty_exits.append(room)
+    return empty_exits
+
+# Create a new room by calling ollama
+def create_room(current_room):
+    # TODO call make_rooms
+    pass
 
 # Print the description and contents of a room
 def printroom(current_room):

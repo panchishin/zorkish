@@ -1,0 +1,18 @@
+{
+    "knife": {
+        "possible_spawn_room": [
+            "Entrance",
+            "Dark Hallway"
+        ],
+        "description": "A trusty blade with a business end you would rather not be on the receiving side of",
+        "value": 5
+    },
+    "skull": {
+        "possible_spawn_room": [
+            "Eastern Narrow Tunnel",
+            "Western Narrow Tunnel"
+        ],
+        "description": "It was a human, possibly ugly",
+        "value": -2
+    }
+}

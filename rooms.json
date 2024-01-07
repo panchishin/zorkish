@@ -1,0 +1,58 @@
+{
+    "Welcome": {
+        "exits": {
+            "start": "Entrance",
+            "exit": "Welcome"
+        },
+        "description": "Welcome to the fabulous underground.\nYou will be provided with danger, exploration, loot, and certain death.\nExplore directions by saying that direction.  Exit this room by typing\nthe name of the exit listed below.\n\nOther commands you can use are 'inventory' and 'describe'.\nTo pick up an item type the name of it."
+    },
+    "Entrance": {
+        "exits": {
+            "north": "Dark Hallway"
+        },
+        "description": "You are at the entrance of the dungeon"
+    },
+    "Dark Hallway": {
+        "exits": {
+            "south": "Entrance",
+            "northwest": "Abyss Top"
+        },
+        "description": "This hallway is dark"
+    },
+    "Abyss Top": {
+        "exits": {
+            "southeast": "Dark Hallway",
+            "down": "Deep Abyss",
+            "north": ""
+        },
+        "description": "Your soul feels heavy and in this place you feel no hope"
+    },
+    "Deep Abyss": {
+        "exits": {
+            "up": "Abyss Top",
+            "east": "Eastern Narrow Tunnel",
+            "west": "Western Narrow Tunnel",
+            "portal": "Purple plains",
+            "northwest": ""
+        },
+        "description": "Your will feels broken and your heart beats pale limp thumps.\nThis place is near an evil beyond anything you've experience before.\nFleeing back up is possible.  Narrow tunnels span east and west.\nSurrounded in cobble stone and adorned with skulls stands a single glowing portal in this vast pit."
+    },
+    "Eastern Narrow Tunnel": {
+        "exits": {
+            "west": "Deep Abyss"
+        },
+        "description": "This is a dead End"
+    },
+    "Western Narrow Tunnel": {
+        "exits": {
+            "east": "Deep Abyss"
+        },
+        "description": "This is a dead End"
+    },
+    "Purple plains": {
+        "exits": {
+            "portal": "Deep Abyss"
+        },
+        "description": "An infinite expanse of purple flowers stretches out in all directions.\nFluffy clouds dot the sky, shielding you from a summer sun.  A cool breeze lifts\nthe fragrance from the fields and refreshes you.\nAn arch made of volcanic glass vibrates with wicked energy, providing a portal to horrors."
+    }
+}
