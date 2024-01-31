@@ -1,60 +1,55 @@
 import json
 import requests
 
-url = "http://localhost:11434/api/chat"
+def call(request_text, temperature=0.4):
+    url = "http://localhost:11434/api/chat"
 
-
-def call(request_text, max_length=1000):
     to_mistral = {
-      "model": "mistral",
-      "messages": [ { "role": "user", "content": request_text } ]
+      "model": "mistral:7b-instruct-q6_K",
+      "messages": [ { "role": "user", "content": request_text }],
+      "stream": False,
+      "format": "json",
+      "options": {"temperature": temperature},
     }
 
     # Send an HTTP request with the JSON data in the body and read response content in chunks
-    response = requests.post(url, data=json.dumps(to_mistral).encode(), stream=True)
+    response = requests.post(url, data=json.dumps(to_mistral).encode(), stream=False)
 
-    result = []
-    print(end="Thinking ")
-    for chunk in response.iter_content(None, decode_unicode=True):
-        if chunk:
-            message = json.loads(chunk)
-            content = message.get('message', {}).get('content')
-            if content:
-                result.append(content)
-                if len(content) % 5 == 0:
-                    print(end=".", flush=True)
-            if len(content) > max_length:
-                break
-    print(" completed")
-    result = "".join(result)
-    return result
+    # Just return the contens of the message
+    return json.loads(response.content.decode())['message']['content']
 
-make_room_prompt = """We are making a dungeon exploration game together.  Inspired by Zork, the game is text based, has rooms with things and puzzles.  My following question will be around creating content for this game.  As context, here is a list of rooms we have created so far: ROOMS.  All content you create is expect to be JSON parsable.  Here is your next task:  create a list of three unique rooms.  Each room should have the following attributes defined: name, inventory (a list of items that the player can find, usually only 1 but sometimes more), deadend (true if it is a dead end), description (2 to 5 sentences describing the room).
+
+make_room_prompt = """
+We are collaborating on the creation of a text-based dungeon exploration game, reminiscent of Zork's intrigue and mystery. For our next stage in content development, I present you with this task: design three distinct rooms for our game.
+
+As context, here a list of rooms we have established so far: ROOMS.
+
+All content you generate must be JSON parsable. Here's your assignment: create a set of three unique rooms. Each room should possess the following attributes defined:
+
+- name: (Choose a descriptive and distinctive title)
+- description: (Compose 3 to 5 evocative sentences that bring the room to life)
 
 Example start:
  {
  "rooms": [
   {
-   "name":
-
-Start:
-"""
+   "name": "The Whispering Chamber",
+   "description": "A hush falls over you as you enter this chamber. The walls are adorned with ancient runes that seem to glow in the dim light, casting eerie shadows across the floor. A musty scent fills 
+your nostrils, and a faint humming can be heard, like the sound of distant water. In the center of the room stands an ornate pedestal, upon which rests a mysterious crystal orb."
+  }
+ ]
+}"""
 
 def make_rooms(room_name_list):
     response = call(make_room_prompt.replace("ROOMS",", ".join(room_name_list)))
 
-    try:
-        rooms = json.loads(response)
-    except ValueError:
-        try:
-            rooms = json.loads('{ "rooms": [ {' + response)
-        except ValueError:
-            try:
-                rooms = json.loads('{ "rooms": [' + response)
-            except ValueError:
-                rooms = {"rooms":[]}
+    # The response is text, but we want to return a JSON object
+    response_json = json.loads(response)
 
-    rooms["rooms"] = rooms.get("rooms", []) 
-    rooms = rooms["rooms"]
-    return rooms
+    # From our prompt we expect all the data to be in the 'rooms' key
+    return response_json.get("rooms", []) 
 
+
+if __name__ == "__main__":
+    a = make_rooms(["Grand Entrance to Palace", "Top of Spiral Stairs", "Powder Room on 2nd Floor", "The Enchanted Library", "The Crystal Cavern"])
+    print(json.dumps(a, indent=2))
